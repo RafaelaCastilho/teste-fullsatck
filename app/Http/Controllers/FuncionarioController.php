@@ -53,7 +53,12 @@ class FuncionarioController extends Controller
 
     public function destroy(string $id)
     {
-        $funcionario = Funcionarios::findOrFail($id);
-        $funcionario->delete();
+        $funcionario = new Funcionarios();
+        $funcionario::findOrFail($id);
+
+        if($funcionario->existId($id)){
+            $funcionario->delete();
+        }
+
     }
 }

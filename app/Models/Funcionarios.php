@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Funcionarios extends Model
+class Funcionarios extends Model 
 {
     protected $fillable = [
         'firstName',
@@ -26,4 +26,9 @@ class Funcionarios extends Model
         return $existe;
     }
 
+    function existId($id) {
+        $existe = Funcionarios::where('id', $id)->exists();
+        return $existe;
+    }
+    
 }

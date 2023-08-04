@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Nette\Utils\DateTime;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -44,6 +45,7 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
+    
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -63,4 +65,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    function isValidEmail($email){
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
 }

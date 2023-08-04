@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
+USE \Tymon\JWTAuth\Facades\JWTAuth;
 
 class apiProtectedRoute extends BaseMiddleware 
 {
@@ -16,6 +17,11 @@ class apiProtectedRoute extends BaseMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        try{
+            $user = JWTAuth::parseToken()->authenticate();
+        }catch(\Exception $e){
+            return response()->json(['status' => 'Erro na validação.']);
+        }
         return $next($request);
     }
 }
