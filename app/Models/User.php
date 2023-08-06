@@ -66,8 +66,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    function isValidEmail($email){
-        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    function existId($id) {
+        $existe = User::where('id', $id)->exists();
+        return $existe;
     }
-
 }

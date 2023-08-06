@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('tarefas', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('description')->nullable();
+            $table->string('title', 50);
+            $table->string('description', 500)->nullable();
             $table->foreignId('assignee_id')->references('id')->on('funcionarios');
-            $table->datetime('due_date');
+            $table->datetime('due_date')->nullable();
             $table->timestamps();
         });
     }

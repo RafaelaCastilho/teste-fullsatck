@@ -20,7 +20,14 @@ class apiProtectedRoute extends BaseMiddleware
         try{
             $user = JWTAuth::parseToken()->authenticate();
         }catch(\Exception $e){
-            return response()->json(['status' => 'Erro na validação.']);
+
+            if($e instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException){
+                return response()->json(['status' => 'Token expirado.']);
+            }else if($e instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
+                return response()->json(['status' => 'Token inválido.']);
+            }else{
+                return response()->json(['status' => 'Token não encontrado.']);
+            }
         }
         return $next($request);
     }

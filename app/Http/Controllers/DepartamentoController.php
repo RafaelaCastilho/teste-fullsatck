@@ -15,21 +15,55 @@ class DepartamentoController extends Controller
 
     public function store(Request $request)
     {
-        Departamento::Create($request->all());
+        try {
+            Departamento::create($request->all());
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '22001') {
+                return response()->json(['status' => 'Limite de caracteres atingido']);
+            }
+            if ($e->getCode() === 'HY000') {
+                return response()->json(['status' => 'Campo faltando']);
+            }
+        }
     }
 
     public function show(string $id)
     {
-        return Departamento::findOrFail($id);
+        $departamento = new Departamento();
+
+        if ($departamento->existId($id)) {
+            return Departamento::findOrFail($id);
+        } else {
+            return "Não encontrado.";
+        }
     }
     public function update(Request $request, string $id)
     {
-        $departamento = Departamento::findOrFail($id);
-        $departamento->update($request->all());
+        $departamento = new Departamento();
+        
+        try {
+            if (!$departamento->existId($id)) {
+                return "Departamento não encontrado";
+            } 
+            
+            $departamento = Departamento::findOrFail($id);
+            return $departamento->update($request->all());
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '22001') {
+                return response()->json(['status' => 'Limite de caracteres atingido']);
+            }
+        }
     }
     public function destroy(string $id)
     {
-        $departamento = Departamento::findOrFail($id);
-        $departamento->delete();
+        $departamento = new Departamento();
+
+        if ($departamento->existId($id)) {
+            $departamento = Departamento::findOrFail($id);
+            $departamento->delete();
+        } else {
+            return "Departamento não encontrado.";
+        }
     }
 }

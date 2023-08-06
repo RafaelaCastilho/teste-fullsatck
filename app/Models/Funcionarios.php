@@ -14,13 +14,6 @@ class Funcionarios extends Model
         'departament_id'
     ];
 
-    function containsOnlyNumbers($phone){
-        return preg_match('/^[0-9]+$/', $phone);
-    }
-    function isValidEmail($email){
-        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
-    }
-
     function isForeignId($departament_id) {
         $existe = Departamento::where('id', $departament_id)->exists();
         return $existe;

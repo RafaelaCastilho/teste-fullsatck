@@ -9,4 +9,8 @@ class Departamento extends Model
     protected $fillable = [
         'name'
     ];
+    function existId($id) {
+        $existe = Departamento::where('id', $id)->exists();
+        return $existe;
+    }
 }

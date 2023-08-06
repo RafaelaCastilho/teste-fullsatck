@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('funcionarios', function (Blueprint $table) {
             $table->id();
-            $table->string('firstName');
-            $table->string('lastName');
-            $table->string('email');
-            $table->string('phone')->nullable();
+            $table->string('firstName', 50);
+            $table->string('lastName', 50);
+            $table->string('email', 100);
+            $table->string('phone', 20)->nullable();
             $table->foreignId('departament_id')->references('id')->on('departamentos');
             $table->timestamps();
         });

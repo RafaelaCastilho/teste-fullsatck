@@ -13,13 +13,12 @@ class Tarefa extends Model
         'assignee_id',
         'due_date'
     ];
-    function isValidDate($due_date, $format = 'Y-m-d')
-    {
-        $dateTimeObj = DateTime::createFromFormat($format, $due_date);
-        return $dateTimeObj && $dateTimeObj->format($format) === $due_date;
-    }
     function isForeignId($assignee_id) {
         $existe = Funcionarios::where('id', $assignee_id)->exists();
+        return $existe;
+    }
+    function existId($id) {
+        $existe = Tarefa::where('id', $id)->exists();
         return $existe;
     }
 }
