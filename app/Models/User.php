@@ -65,9 +65,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-
-    function existId($id) {
-        $existe = User::where('id', $id)->exists();
-        return $existe;
-    }
 }

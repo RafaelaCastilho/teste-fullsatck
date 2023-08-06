@@ -3,87 +3,91 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Validation;
+use App\Models\Utils\Validation;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    protected $user;
+    protected $valid;
+
+    public function __construct(User $user, Validation $valid){
+        $this->user = $user;
+        $this->valid = $valid;
+    }
     public function index()
     {
         return User::all();
     }
-
     public function store(Request $request)
     {
-        $valid = new Validation();
         $email = $request->email;
 
-        try{
-            if (!$valid->isValidEmail($email)) {
+        try {
+            if (!$this->valid->isValidEmail($email)) {
                 return "Email inválido. O email deve estar correto e sem espaços.";
             }
-    
             return User::create($request->all());
-        }catch (\Illuminate\Database\QueryException $e) {
-            if($e->getCode() ==='22001'){
+            
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '22001') {
                 return response()->json(['status' => 'Limite de caracteres atingido']);
             }
-            if($e->getCode() ==='HY000'){
+            if ($e->getCode() === 'HY000') {
                 return response()->json(['status' => 'Campo faltando']);
             }
-            if($e->getCode() === '22007'){
+            if ($e->getCode() === '22007') {
                 return response()->json(['status' => 'Formato da data inconrreto. Tente: yyyy-mm-dd hh:mm:ss']);
             }
+            if ($e->getCode() === '23000') {
+                return response()->json(['status' => 'Email já cadastrado.']);
+            }
         }
-        
+
     }
 
     public function show(string $id)
     {
-        $user = new User();
-        if ($user->existId($id)) {
-            return User::findOrFail($id);
-        } else {
+        if (!$this->valid->existId($id, $this->user)) {
             return "Não encontrado.";
-        }
+        } 
+        return User::findOrFail($id);
     }
 
     public function update(Request $request, string $id)
     {
-        $user = new User();
-        $valid = new Validation();
         $email = $request->email;
 
-        try{
-            if (!$user->existId($id)) {
+        try {
+            if (!$this->valid->existId($id, $this->user)) {
                 return "Usuário não encontrado.";
             }
-            if (!$valid->isValidEmail($email)) {
+            if (!$this->valid->isValidEmail($email)) {
                 return "Email inválido. O email deve estar correto e sem espaços.";
             }
-    
-            $user = User::findOrFails($id);
-            $user->update($request->all());
 
-        }catch (\Illuminate\Database\QueryException $e) {
-            if($e->getCode() ==='22001'){
+            $user = User::findOrFails($id);
+            return $user->update($request->all());
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() === '22001') {
                 return response()->json(['status' => 'Limite de caracteres atingido']);
             }
-            if($e->getCode() === '22007'){
+            if ($e->getCode() === '22007') {
                 return response()->json(['status' => 'Formato da data inconrreto. Tente: yyyy-mm-dd hh:mm:ss']);
+            }
+            if ($e->getCode() === '23000') {
+                return response()->json(['status' => 'Email já cadastrado.']);
             }
         }
     }
 
     public function destroy(string $id)
     {
-        $user = new User();
-
-        if ($user->existId($id)) {
-            $user = User::findOrFail($id);
-            $user->delete();
-        } else {
+        if (!$this->valid->existId($id, $this->user)) {
             return "Usuário não encontrado.";
         }
+        $user = User::findOrFail($id);
+        $user->delete();
     }
 }

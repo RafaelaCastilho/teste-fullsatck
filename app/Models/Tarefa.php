@@ -13,12 +13,4 @@ class Tarefa extends Model
         'assignee_id',
         'due_date'
     ];
-    function isForeignId($assignee_id) {
-        $existe = Funcionarios::where('id', $assignee_id)->exists();
-        return $existe;
-    }
-    function existId($id) {
-        $existe = Tarefa::where('id', $id)->exists();
-        return $existe;
-    }
 }

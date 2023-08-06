@@ -3,11 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Departamento;
+use App\Models\Utils\Validation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class DepartamentoController extends Controller
 {
+    protected $departamento;
+    protected $valid;
+     public function __construct(Departamento $departamento, Validation $valid){
+        $this->departamento = $departamento;
+        $this->valid = $valid;
+     }
+
     public function index()
     {
         return Departamento::all();
@@ -29,23 +37,17 @@ class DepartamentoController extends Controller
 
     public function show(string $id)
     {
-        $departamento = new Departamento();
-
-        if ($departamento->existId($id)) {
-            return Departamento::findOrFail($id);
-        } else {
+        if (!$this->valid->existId($id, $this->departamento)) {
             return "Não encontrado.";
-        }
+        } 
+        return Departamento::findOrFail($id);
     }
     public function update(Request $request, string $id)
     {
-        $departamento = new Departamento();
-        
         try {
-            if (!$departamento->existId($id)) {
+            if (!$this->valid->existId($id, $this->departamento)) {
                 return "Departamento não encontrado";
             } 
-            
             $departamento = Departamento::findOrFail($id);
             return $departamento->update($request->all());
 
@@ -57,13 +59,10 @@ class DepartamentoController extends Controller
     }
     public function destroy(string $id)
     {
-        $departamento = new Departamento();
-
-        if ($departamento->existId($id)) {
-            $departamento = Departamento::findOrFail($id);
-            $departamento->delete();
-        } else {
+        if (!$this->valid->existId($id, $this->departamento)) {
             return "Departamento não encontrado.";
-        }
+        } 
+        $departamento = Departamento::findOrFail($id);
+        $departamento->delete();
     }
 }

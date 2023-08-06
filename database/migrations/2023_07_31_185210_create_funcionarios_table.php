@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('firstName', 50);
             $table->string('lastName', 50);
-            $table->string('email', 100);
+            $table->string('email', 100)->unique();
             $table->string('phone', 20)->nullable();
             $table->foreignId('departament_id')->references('id')->on('departamentos');
             $table->timestamps();

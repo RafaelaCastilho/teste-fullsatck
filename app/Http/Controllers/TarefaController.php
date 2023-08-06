@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Utils\Validation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tarefa;
@@ -9,6 +10,14 @@ use App\Models\Tarefa;
 
 class TarefaController extends Controller
 {
+    protected $tarefa;
+    protected $valid;
+
+    public function __construct(Tarefa $tarefa, Validation $valid)
+    {
+        $this->tarefa = $tarefa;
+        $this->valid = $valid;
+    }
     public function index()
     {
         return Tarefa::all();
@@ -16,11 +25,10 @@ class TarefaController extends Controller
 
     public function store(Request $request)
     {
-        $tarefa = new Tarefa();
-        $assignee_id = $request->assignee_id;
+        $foreign_id = $request->assignee_id;
 
         try {
-            if (!$tarefa->isForeignId($assignee_id)) {
+            if (!$this->valid->isForeignId($foreign_id, $this->tarefa)) {
                 return "Funcionário inválido";
             }
             return Tarefa::create($request->all());
@@ -40,24 +48,20 @@ class TarefaController extends Controller
 
     public function show(string $id)
     {
-        $tarefa = new Tarefa();
-
-        if ($tarefa->existId($id)) {
-            return Tarefa::findOrFail($id);
-        } else {
+        if (!$this->valid->existId($id, $this->tarefa)) {
             return "Não encontrado.";
-        }
+        } 
+        return Tarefa::findOrFail($id);
     }
     public function update(Request $request, string $id)
     {
-        $tarefa = new Tarefa();
-        $assignee_id = $request->assignee_id;
+        $foreign_id = $request->assignee_id;
 
         try {
-            if (!$tarefa->existId($id)) {
+            if (!$this->valid->existId($id, $this->tarefa)) {
                 return "Tarefa não encontrada";
             }
-            if ($tarefa->isForeignId($assignee_id)) {
+            if ($this->valid->isForeignId($foreign_id, $this->tarefa)) {
                 return "Funcionário inválido";
             }
 
@@ -76,14 +80,10 @@ class TarefaController extends Controller
     }
     public function destroy(string $id)
     {
-        $tarefa = new Tarefa();
-
-        if ($tarefa->existId($id)) {
-            $tarefa = Tarefa::findOrFail($id);
-            $tarefa->delete();
-        } else {
+        if (!$this->valid->existId($id, $this->tarefa)) {
             return "Tarefa não encontrada.";
-        }
-
+        } 
+        $tarefa = Tarefa::findOrFail($id);
+        $tarefa->delete();
     }
 }
